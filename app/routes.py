@@ -194,11 +194,11 @@ def getSeasonalandAVG(type_dataset, yearInit, yearEnd, type_index):
                     "axisX":month,
                     "axisY":np.round(dataS,2).tolist()
                 },
-                # "graphAVG": {
-                #     "TaxisY": dataTrend_all.tolist(),
-                #     "axisX":yearAll,
-                #     "axisY":np.round(dataAll,2).tolist()
-                # },
+                "graphAVG": {
+                    "TaxisY": dataTrend_all.tolist(),
+                    "axisX":yearAll,
+                    "axisY":np.round(dataAll,2).tolist()
+                },
             }
         }
     )
@@ -537,11 +537,11 @@ def getSlectGraph():
                         "axisX":month,
                         "axisY":np.round(dataS,2).tolist()
                     },
-                    # "graphAVG": {
-                    #     "TaxisY": dataTrend_all.tolist(),
-                    #     "axisX":yearAll,
-                    #     "axisY":np.round(dataAll,2).tolist()
-                    # },
+                    "graphAVG": {
+                        "TaxisY": dataTrend_all.tolist(),
+                        "axisX":yearAll,
+                        "axisY":np.round(dataAll,2).tolist()
+                    },
                 }
             }
         )
