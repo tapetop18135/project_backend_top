@@ -195,7 +195,7 @@ def getSeasonalandAVG(type_dataset, yearInit, yearEnd, type_index):
                     "axisY":np.round(dataS,2).tolist()
                 },
                 "graphAVG": {
-                    "TaxisY": dataTrend_all.tolist(),
+                    "TaxisY": np.round(dataTrend_all,2).tolist(),
                     "axisX":yearAll,
                     "axisY":np.round(dataAll,2).tolist()
                 },
@@ -278,12 +278,13 @@ def getmapPCA(type_dataset, yearInit, yearEnd, type_index):
         ulatlon = regridOBJ.getLatLon_regrid(np.array(deatail["lat_list"]), np.array(deatail["lon_list"]))
         deatail["lat_list"] = ulatlon["lat"].tolist()
         deatail["lon_list"] = ulatlon["lon"].tolist()
-
-
-        # print(pca_eofs)
+        
     else:
         pca_eofs = pca_eofs.tolist()    
 
+    pca_va_ratio = np.array(pca_va_ratio,dtype=np.float64)
+    pca_pc = np.array(pca_pc,dtype=np.float64)
+    
     return jsonify(
         {
             "detail": deatail,
@@ -295,11 +296,12 @@ def getmapPCA(type_dataset, yearInit, yearEnd, type_index):
                 "ratio":{
                     "axisX":ratioX.tolist(),
                     "axisY":np.round(pca_va_ratio,2).tolist()
+                    # "axisY":value
                 }
             },
             "map": { 
                 "mapPCA": pca_eofs,
-                "mapVar": np.round(dataVar,2).tolist()
+                "mapVar": dataVar.tolist()
             }
         }
     )
@@ -538,7 +540,7 @@ def getSlectGraph():
                         "axisY":np.round(dataS,2).tolist()
                     },
                     "graphAVG": {
-                        "TaxisY": dataTrend_all.tolist(),
+                        "TaxisY": np.round(dataTrend_all,2).tolist(),
                         "axisX":yearAll,
                         "axisY":np.round(dataAll,2).tolist()
                     },
