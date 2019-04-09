@@ -229,91 +229,42 @@ compare = {
 #     insertTomongo(data,f'{dataset.lower()}_{collect.lower()}', detail, aryLatLon, 1970)
 #     # break
 # print(arrTemp)
+
 ############################# TABLE ##########################
 # aj = ['cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
-a = MongoDB_lc()
-a.collection("dataset")
-a.mongo_insert(
-    [
-        {"haveDataset": ["ghcndex", "hadex2", "ecearth_rcp45", "ecearth_rcp85", "mpi_rcp45", "mpi_rcp85"] },
-    {
-        "ghcndex": {"start": 1951, "stop": 2017,
-        "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95pt', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
-        }
-    },
-    {
-        "hadex2": {"start": 1910, "stop": 2010,
-        "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'etr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95ptot', 'r95pt', 'r95p', 'r99ptot', 'r99pt', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
-        }
-    },
-    {
-        "ecearth_rcp45": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "ecearth_rcp85": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "mpi_rcp45":{"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "mpi_rcp85": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    }]
-    )
-
-
-############################################################
-
-
-# basepath = "../dataset/netCDF4new/"
-# files = os.listdir(basepath)
-# index = 0
-# arrTemp = []
-# month = ['Ann','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-# for i in files:
-#     name = i.split(".")
-#     # print(name)
-#     collect = name[0].split("_")[2]
-#     dataset = f'{name[0].split("_")[0]}_{name[0].split("_")[1]}'
-#     # print(collect)
-#     # arrTemp.append(collect.lower())
-#     # continue
-#     # print(collect)
-#     # print(dataset)
-#     data, aryLatLon = get_data(f"{basepath}{i}")
-#     # print(data)
-#     # print(aryLatLon)
-#     # break
-#     if(collect in compare):
-#         detail = {
-#             "index_name": collect, # TXx
-#             "short_name": compare[collect][0], # Max Tmax
-#             "type_measure": compare[collect][1], # temperature
-#             "method": compare[collect][2], # intensity
-#             "unit": compare[collect][3], # °C def
-#             "description": compare[collect][4], # °C def
-#             "dataset": dataset, # ghcendex
+# a = MongoDB_lc()
+# a.collection("dataset")
+# a.mongo_insert(
+#     [
+#         {"haveDataset": ["ghcndex", "hadex2", "ecearth_rcp45", "ecearth_rcp85", "mpi_rcp45", "mpi_rcp85"] },
+#     {
+#         "ghcndex": {"start": 1951, "stop": 2017,
+#         "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95pt', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
 #         }
-#     else:
-#         detail = {
-#             "index_name": collect, # TXx
-#             "short_name": None, # Max Tmax
-#             "type_measure": None, # temperature
-#             "method": None, # intensity
-#             "unit": None, # °C def
-#             "description": None, # °C def
-#             "dataset": dataset, # ghcendex
+#     },
+#     {
+#         "hadex2": {"start": 1910, "stop": 2010,
+#         "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'etr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95ptot', 'r95pt', 'r95p', 'r99ptot', 'r99pt', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
 #         }
-#     # print(detail)
-    
-#     # break
-#     insertTomongo(data,f'xxxxxxx {dataset.lower()}_{collect.lower()}', detail, aryLatLon, 1970)
-    # break
-# print(arrTemp)
+#     },
+#     {
+#         "ecearth_rcp45": {"start": 1970, "stop": 2099,
+#         "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
+#         }
+#     },
+#     {
+#         "ecearth_rcp85": {"start": 1970, "stop": 2099,
+#         "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
+#         }
+#     },
+#     {
+#         "mpi_rcp45":{"start": 1970, "stop": 2099,
+#         "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
+#         }
+#     },
+#     {
+#         "mpi_rcp85": {"start": 1970, "stop": 2099,
+#         "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
+#         }
+#     }]
+#     )

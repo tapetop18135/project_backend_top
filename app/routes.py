@@ -371,7 +371,7 @@ def getmapHypoTrend(type_dataset, yearInit, yearEnd, type_index):
             tempData[tempHypo == 1] = -99.99
             tempData[seaMask == 0] = -99.99
             print("tempData")
-            print(tempData)
+            # print(tempData)
 
         # ulatlon = regridOBJ.getLatLon_regrid(np.array(deatail["lat_list"]), np.array(deatail["lon_list"]))
         # deatail["lat_list"] = ulatlon["lat"].tolist()

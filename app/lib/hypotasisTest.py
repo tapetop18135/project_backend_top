@@ -79,7 +79,7 @@ class Trend_service():
                     hypoLon.append(True)
                 else:
                     slope, hypo  = self.__trendTime(diabetes_y_train)
-                    aryLon.append(slope)
+                    aryLon.append(slope[0][0])
                     if(hypo == False):
                         sumhypo += 1
                     else:
