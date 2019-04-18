@@ -1,6 +1,8 @@
 import numpy as np
 from netCDF4 import Dataset
 from mongoDB import MongoDB_lc
+from classRegridsNew import Regrids
+from classGetMask import MaskFromText
 import pandas as pd
 import os
 
@@ -25,7 +27,7 @@ def get_data(filez):
         lon = ncin.variables['longitude'][:]
     return dicm, [lat,lon]
 
-def insertTomongo(data,col,detail,aryLatLon,yearInit):
+def insertTomongo(data,col,detail,aryLatLon,yearInit, mask=True):
     name = ['Ann','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
     nt, nlat, nlon = data['Ann'].shape
     a = MongoDB_lc()
@@ -37,11 +39,15 @@ def insertTomongo(data,col,detail,aryLatLon,yearInit):
             # pdAry = pd.DataFrame(data[month][year]).fillna(-99)
             # dataAry.append(pdAry.values.tolist())
             try:
-                dataAry.append(data[month][year].tolist())
+                df = pd.DataFrame(data[month][year])
+                df = df.where((pd.notnull(df)), None)
+                dataAry.append(df.values.tolist())
             except:
                 break
 
-        npAry = np.array(dataAry)
+        npAry = np.array(dataAry, dtype=np.float64)
+        # print(npAry.shape)
+
         post = {
             "year" : yearInit+year,
             "data" : dataAry
@@ -49,15 +55,24 @@ def insertTomongo(data,col,detail,aryLatLon,yearInit):
         a.mongo_insert(post)     
         print(str(yearInit+year))
     
-    maskAry = data['Ann'][0].mask
-    maskAry = maskAry.tolist()
-    post = {
-            "detail" : detail,
-            "lat" : aryLatLon[0].tolist(),
-            "lon" : aryLatLon[1].tolist(),
-            "key__" : f"{detail['dataset']}_{detail['index_name']}",
-            "mask" : maskAry
-        }
+    print(detail['dataset'])
+    if(mask == True):
+        maskAry = data['Ann'][0].mask
+        maskAry = maskAry.tolist()
+        post = {
+                "detail" : detail,
+                "lat" : aryLatLon[0].tolist(),
+                "lon" : aryLatLon[1].tolist(),
+                "key__" : f"{detail['dataset']}_{detail['index_name']}",
+                "mask" : maskAry
+            }
+    else:
+        post = {
+                "detail" : detail,
+                "lat" : aryLatLon[0].tolist(),
+                "lon" : aryLatLon[1].tolist(),
+                "key__" : f"{detail['dataset']}_{detail['index_name']}",
+            }
     a.mongo_insert(post)  
     
 
@@ -99,6 +114,10 @@ compare = {
     "R10mm":["Heavy precipitation days","precipitation", "Frequency", "days", "Annual number of days when precipitation ≥ 10 mm"],
     "R20mm":["Very heavy precipitation days","precipitation", "Frequency", "days", "Annual number of days when precipitation ≥ 20 mm"],
 }
+
+dictPost = {}
+alldataset = []
+
 ####################### GHCNDEX ###########################
 ####################### GHCNDEX ###########################
 ####################### GHCNDEX ###########################
@@ -107,8 +126,8 @@ files = os.listdir(basepath)
 index = 0
 month = ['Ann','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
+index_ary = []
 arr1ghcndex = []
-arr2hadex2 = []
 
 for i in files:
     name = i.split(".")
@@ -136,19 +155,26 @@ for i in files:
             "description": None, # °C def
             "dataset": dataset, # ghcendex
         }
-    insertTomongo(data,f'ghcndex_{collect.lower()}', detail, aryLatLon, 1951)
+    yearinit = 1951
+    index_ary.append(collect.lower())
+    insertTomongo(data,f'ghcndex_{collect.lower()}', detail, aryLatLon, yearinit)
     arr1ghcndex.append(collect.lower())
     index+=1
 
-
+alldataset.append(dataset)
+dictPost[dataset] = {
+    "start": yearinit, "stop": data['Ann'].shape[0]+yearinit-2,"indexs": index_ary
+}
 ######################### HADEX2 ###########################
 ######################### HADEX2 ###########################
 ######################### HADEX2 ###########################
 basepath = "../dataset/hadex2_current/"
 files = os.listdir(basepath)
 index = 0
+index_ary = []
+arr2hadex2 = []
 month = ['Ann','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-    
+
 for i in files:
     name = i.split(".")
     collect = name[0].split("_")[1]
@@ -175,34 +201,75 @@ for i in files:
             "description": None, # °C def
             "dataset": dataset, # ghcendex
         }
-    insertTomongo(data,f'hadex2_{collect.lower()}', detail, aryLatLon, 1901)
+    yearinit = 1901
+    index_ary.append(collect.lower())
+    insertTomongo(data,f'hadex2_{collect.lower()}', detail, aryLatLon, yearinit)
     arr2hadex2.append(collect.lower())
     index+=1
+
+alldataset.append(dataset)
+dictPost[dataset] = {
+    "start": yearinit, "stop": data['Ann'].shape[0]+yearinit-1,"indexs": index_ary
+}
 print(":::::::::::::::::::::::::::::::::::::::::")
 print(arr1ghcndex)
 print("*---------------------------------------*")
 print(arr2hadex2)
 
-#################################################################
+print(dictPost)
+tempSlide = [
+    {"haveDataset":alldataset},dictPost
+]
+print(alldataset)
+
+####################### NETCDF ###########################
+####################### NETCDF ###########################
+####################### NETCDF ###########################
 basepath = "../dataset/netCDF4/"
 files = os.listdir(basepath)
 index = 0
-arrTemp = []
 month = ['Ann','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 for i in files:
     name = i.split(".")
-    # print(name)
+
     collect = name[0].split("_")[2]
     dataset = f'{name[0].split("_")[0]}_{name[0].split("_")[1]}'
-    # print(collect)
-    # arrTemp.append(collect.lower())
-    # continue
-    # print(collect)
-    # print(dataset)
+
+    print(dataset+"_"+collect)
     data, aryLatLon = get_data(f"{basepath}{i}")
-    # print(data)
-    # print(aryLatLon)
-    # break
+    
+    regridOBJ = Regrids()
+
+    objMask = MaskFromText()
+    dataMask = objMask.readCSV("mask_sea_AJ",loc="../staticFile/")   
+    dataMask[dataMask == 0] = 2
+    dataMask[dataMask == 1] = 0
+    dataMask[dataMask == 2] = 1
+    seaMaskRegrid = regridOBJ.regrids(dataMask) 
+    print(f"seaRegrid : {seaMaskRegrid.shape}")
+    
+    dataRegrid = []
+    for i in range(0, data["Ann"].shape[0]):
+        dataRe = regridOBJ.regrids(data["Ann"][i])
+        dataRe[seaMaskRegrid == 0] = np.nan
+        dataRegrid.append(dataRe)
+
+    dataRegrid = np.array(dataRegrid,dtype=np.float64)
+
+    # print(dataRegrid.shape)
+    # for i in range(0,dataRegrid.shape[1]):
+    #     for j in range(0, dataRegrid.shape[2]):
+    #         if(np.isnan(dataRegrid[0][i][j])):
+    #             print(" ", end="")
+    #         else:
+    #             print("*", end="")
+    #     print()
+
+    data = {"Ann":dataRegrid}
+    print(data["Ann"].shape)
+    lat_linespace = np.linspace(aryLatLon[0][0], aryLatLon[0][len(aryLatLon[0])-1], data['Ann'].shape[1])
+    lon_linespace = np.linspace(aryLatLon[1][0], aryLatLon[1][len(aryLatLon[1])-1], data['Ann'].shape[2])
+
     if(collect in compare):
         detail = {
             "index_name": collect, # TXx
@@ -223,48 +290,22 @@ for i in files:
             "description": None, # °C def
             "dataset": dataset, # ghcendex
         }
-    # print(detail)
-    
+
+    yearinit = 1970
+    if(dataset in dictPost):
+        dictPost[dataset]['indexs'].append(collect.lower())
+    else:
+        dictPost[dataset] = {
+            "start": yearinit, "stop": data['Ann'].shape[0]+yearinit-1,"indexs": [collect.lower()]
+        }
+        alldataset.append(dataset)
     # break
-    insertTomongo(data,f'{dataset.lower()}_{collect.lower()}', detail, aryLatLon, 1970)
+    insertTomongo(data,f'{dataset.lower()}_{collect.lower()}', detail, [lat_linespace,lon_linespace], yearinit, mask = None)
     # break
-print(arrTemp)
+
 
 ############################ TABLE ##########################
 # aj = ['cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
 a = MongoDB_lc()
 a.collection("dataset")
-a.mongo_insert(
-    [
-        {"haveDataset": ["ghcndex", "hadex2", "ecearth_rcp45", "ecearth_rcp85", "mpi_rcp45", "mpi_rcp85"] },
-    {
-        "ghcndex": {"start": 1951, "stop": 2017,
-        "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95pt', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
-        }
-    },
-    {
-        "hadex2": {"start": 1910, "stop": 2010,
-        "indexs": ['cdd', 'csdi', 'cwd', 'dtr', 'etr', 'fd', 'gsl', 'id', 'prcptot', 'r10mm', 'r20mm', 'r95ptot', 'r95pt', 'r95p', 'r99ptot', 'r99pt', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
-        }
-    },
-    {
-        "ecearth_rcp45": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "ecearth_rcp85": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "mpi_rcp45":{"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    },
-    {
-        "mpi_rcp85": {"start": 1970, "stop": 2099,
-        "indexs": ['txx', 'csdi', 'fd0', 'rx1day', 'cwd', 'r10mm']
-        }
-    }]
-    )
+a.mongo_insert(tempSlide)

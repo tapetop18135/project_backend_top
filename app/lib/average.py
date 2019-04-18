@@ -36,7 +36,7 @@ class Average_service():
             warnings.simplefilter("ignore", category=RuntimeWarning)
             tempAry = np.array(tempAry, dtype=np.float)
             tempAry = np.nanmean(tempAry, axis= 0)
-        print(time.time() - start)
+        print(f"time : {time.time() - start} sec")
         # if(keyMask != None):
         #     resultMask = self.getMask(keyMask)
         #     return ma.array(tempAry, mask = resultMask)
