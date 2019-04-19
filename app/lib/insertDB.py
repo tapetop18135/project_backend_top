@@ -251,6 +251,8 @@ for i in files:
     dataRegrid = []
     for i in range(0, data["Ann"].shape[0]):
         dataRe = regridOBJ.regrids(data["Ann"][i])
+        if(np.unique(dataRe).shape[0] == 1):
+            dataRe[dataRe == 0] = np.nan
         dataRe[seaMaskRegrid == 0] = np.nan
         dataRegrid.append(dataRe)
 
@@ -304,8 +306,9 @@ for i in files:
     # break
 
 
-############################ TABLE ##########################
-# aj = ['cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi', 'cdd', 'csdi', 'cwd', 'dtr', 'fd0', 'fd16', 'id0', 'prcptot', 'r10mm', 'r20mm', 'r25mm', 'r95p', 'r99p', 'rx1day', 'rx5day', 'sdii', 'su25', 'su35', 'tmaxmean', 'tminmean', 'tn10p', 'tn90p', 'tnn', 'tnx', 'tr20', 'tr25', 'trend', 'tx10p', 'tx90p', 'txn', 'txx', 'wsdi']
+########################### TABLE ##########################
+########################### TABLE ##########################
+########################### TABLE ##########################
 a = MongoDB_lc()
 a.collection("dataset")
 a.mongo_insert(tempSlide)
