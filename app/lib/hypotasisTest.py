@@ -47,7 +47,7 @@ class Trend_service():
         from scipy import stats
         t_score = r/np.sqrt((1-r**2)/(n-2))
         t_cri = stats.t.ppf(1-alpha/2, n)
-        if(t_score >= t_cri*-1 and t_score <= t_cri):
+        if(t_score >= t_cri*-1 and t_score <= t_cri or np.isnan(r)):
             return True # fail to reject H0 ไม่มีนัยยะสัมคัญ
         return False # reject H0 มีนัยยะสัมคัญ
 
@@ -153,7 +153,7 @@ class Trend_service():
 #     # plt.savefig(fname)
 #     plt.show()
 
-######################
+# #####################
 # location = "../dataset/ghcndex_current/GHCND_TXx_1951-2018_RegularGrid_global_2.5x2.5deg_LSmask.nc"
 # nc = Dataset(location, 'r')
 # lon = nc.variables["lon"][:]
@@ -161,7 +161,7 @@ class Trend_service():
 # latPoint = []
 # lonPoint = []
 # print(lon)
-######################
+# #####################
 
 # def year_ary(init,end):
 #     init = init.split("-")
@@ -176,10 +176,10 @@ class Trend_service():
 #     return year, [int(init[1]),int(end[1])]
 
 # yearinit = "1951-1"
-# yearend = "1951-12"
+# yearend = "2010-12"
 
 # ary, month_IE = year_ary(yearinit, yearend)
-# collection = 'ghcndex_TXx_trend'
+# collection = 'ghcndex_fd'
 
 # c = Trend_service(ary, collection, month_IE[0], month_IE[1])
 # dataRaw = c.getData(0)
@@ -190,7 +190,7 @@ class Trend_service():
 # print(tempR.shape)
 # print(hypoLat.shape)
 
-# tempR, hypoLat = trendGrid(dataM['Ann'])
+# # tempR, hypoLat = trendGrid(dataM['Ann'])
 # for i in range(0,len(hypoLat)):
 #     for j in range(0,len(hypoLat[0])):
 #         if(hypoLat[i][j] == False):
@@ -200,7 +200,7 @@ class Trend_service():
 # print(lonPoint)
 
 # # map(temp['Ann'][0],[latPoint,lonPoint],'TEEER')
-# map(tempR, [latPoint,lonPoint],'TEEER')
+# map(tempR, [latPoint,lonPoint],f'{collection} {yearinit}-{yearend}')
 
 # yearinit = "2000-1"
 # yearend = "2017-12"
